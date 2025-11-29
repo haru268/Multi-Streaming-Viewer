@@ -39,13 +39,16 @@ export const extractStreamId = (url: string, platform: Platform): string => {
     return channelName ? channelName.toLowerCase() : '';
   } else if (platform === 'twitcasting') {
     // ツイキャス URL形式: https://twitcasting.tv/USER_ID
+    // または: https://twitcasting.tv/c:USER_ID (c:で始まる形式)
     // または: @USER_ID または USER_ID (直接ユーザーIDの場合)
     // @記号を除去
     let cleanedUrl = url.replace(/^@/, '').trim();
     
     // URL形式の場合、パスからユーザーIDを抽出
+    // c:で始まる形式もサポート（例: c:daasuu7sub）
     if (cleanedUrl.includes('twitcasting.tv/')) {
-      const urlMatch = cleanedUrl.match(/twitcasting\.tv\/([a-zA-Z0-9_]+)/);
+      // スラッシュ以降の最初の部分を取得（URLパラメータやフラグメントを除外）
+      const urlMatch = cleanedUrl.match(/twitcasting\.tv\/([^\/\?\#]+)/);
       if (urlMatch) {
         return urlMatch[1];
       }
@@ -58,13 +61,14 @@ export const extractStreamId = (url: string, platform: Platform): string => {
       const lastPart = parts[parts.length - 1];
       // URLパラメータを除去
       const userId = lastPart.split('?')[0].split('#')[0];
-      if (userId && /^[a-zA-Z0-9_]+$/.test(userId)) {
+      if (userId) {
         return userId;
       }
     }
     
-    // そのまま返す（既にユーザーIDのみの場合）
-    return cleanedUrl.replace(/[^a-zA-Z0-9_]/g, '');
+    // そのまま返す（既にユーザーIDのみの場合、c:形式も含む）
+    // URLパラメータやフラグメントを除去
+    return cleanedUrl.split('?')[0].split('#')[0].trim();
   }
   return url;
 };
@@ -94,13 +98,14 @@ export const getEmbedUrl = (streamId: string, platform: Platform, isMuted: boole
     // 埋め込みコードの改変は禁止
     // ツイキャスの正しい埋め込みURL形式を使用
     // @記号が含まれている場合は除去
-    const cleanStreamId = streamId.replace(/^@/, '').trim();
-    // ユーザーIDのみを抽出（URLやその他の文字を除去）
-    const userId = cleanStreamId.replace(/[^a-zA-Z0-9_]/g, '');
-    if (!userId) return '';
+    let cleanStreamId = streamId.replace(/^@/, '').trim();
+    // URLパラメータやフラグメントを除去
+    cleanStreamId = cleanStreamId.split('?')[0].split('#')[0].trim();
+    if (!cleanStreamId) return '';
     // ツイキャスの正しい埋め込みURL形式: ライブ配信の場合
     // https://twitcasting.tv/ユーザーID/embeddedplayer/live
-    return `https://twitcasting.tv/${encodeURIComponent(userId)}/embeddedplayer/live`;
+    // c:で始まる形式（例: c:daasuu7sub）もサポート
+    return `https://twitcasting.tv/${encodeURIComponent(cleanStreamId)}/embeddedplayer/live`;
   }
   return '';
 };
