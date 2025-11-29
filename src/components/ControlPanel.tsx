@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Platform } from '../types';
 import styles from './ControlPanel.module.css';
 

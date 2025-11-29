@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StreamSlot, Platform, AppSettings } from './types';
 import { StreamSlot as StreamSlotComponent } from './components/StreamSlot';
 import { ControlPanel } from './components/ControlPanel';
@@ -33,7 +33,6 @@ function App() {
   const [url, setUrl] = useState('');
   const [teamName, setTeamName] = useState('');
   const [columns, setColumns] = useState<2 | 3 | 4>(3);
-  const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
 
   useEffect(() => {
