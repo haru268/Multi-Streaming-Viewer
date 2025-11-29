@@ -8,6 +8,7 @@ interface StreamSlotProps {
   columns: 2 | 3 | 4;
   onMuteToggle: (id: string) => void;
   onVolumeChange: (id: string, volume: number) => void;
+  onRemove: (id: string) => void;
 }
 
 declare global {
@@ -22,6 +23,7 @@ export const StreamSlot: React.FC<StreamSlotProps> = ({
   columns,
   onMuteToggle,
   onVolumeChange,
+  onRemove,
 }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerRef = useRef<any>(null);
@@ -164,11 +166,24 @@ export const StreamSlot: React.FC<StreamSlotProps> = ({
     ? getEmbedUrl(slot.streamId, slot.platform, slot.isMuted)
     : '';
 
+  const handleRemove = () => {
+    onRemove(slot.id);
+  };
+
   return (
     <div className={styles.slotWrapper}>
       <div
         className={`${styles.slot} ${styles[`cols-${columns}`]}`}
       >
+        {embedUrl && (
+          <button
+            className={styles.removeButton}
+            onClick={handleRemove}
+            title="ストリームを削除"
+          >
+            ×
+          </button>
+        )}
         {embedUrl ? (
           // 規約遵守: 公式埋め込みプレイヤーをそのまま使用
           // YouTube IFrame APIを使用して音量制御（公式APIの範囲内）

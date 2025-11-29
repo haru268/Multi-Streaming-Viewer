@@ -138,6 +138,14 @@ function App() {
     );
   }, []);
 
+  const handleRemoveStream = useCallback((id: string) => {
+    setSlots((prevSlots) =>
+      prevSlots.map((slot) =>
+        slot.id === id ? createEmptySlot(id) : slot
+      )
+    );
+  }, []);
+
 
   const handleSaveSettings = useCallback(() => {
     const settings: AppSettings = {
@@ -190,6 +198,7 @@ function App() {
             columns={columns}
             onMuteToggle={handleMuteToggle}
             onVolumeChange={handleVolumeChange}
+            onRemove={handleRemoveStream}
           />
         ))}
       </div>
