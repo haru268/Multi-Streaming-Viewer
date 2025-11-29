@@ -1,0 +1,318 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  background: #2a2a2a;
+  border-radius: 12px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #444;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 32px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  color: #fff;
+}
+
+.content {
+  padding: 24px;
+}
+
+.intro {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #fff;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border-left: 4px solid #ff6b6b;
+}
+
+.warningSection {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 8px;
+  border: 2px solid rgba(255, 193, 7, 0.3);
+}
+
+.warningTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffc107;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.warningText {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #ffc107;
+  margin: 0;
+}
+
+.section {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #444;
+}
+
+.section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ff6b6b;
+  margin: 0 0 12px 0;
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #ccc;
+  margin: 0 0 12px 0;
+}
+
+.link {
+  display: inline-block;
+  color: #4dabf7;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #74c0fc;
+  text-decoration: underline;
+}
+
+.footer {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #444;
+}
+
+.footerText {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #aaa;
+  margin: 0;
+  text-align: center;
+}
+
+.volumeGuide {
+  margin-top: 16px;
+}
+
+.volumeGuideImage {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.volumeControlDemo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+}
+
+.volumeButtonDemo {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 18px;
+  cursor: default;
+}
+
+.volumeSliderDemo {
+  position: relative;
+  width: 100px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.volumeSliderTrack {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.volumeSliderThumb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.volumeValueDemo {
+  color: #4dabf7;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 40px;
+  text-align: right;
+}
+
+.volumeGuideSteps {
+  margin-top: 16px;
+}
+
+.volumeGuideText {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #fff;
+  margin: 0 0 12px 0;
+}
+
+.volumeGuideList {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #ccc;
+  margin: 0 0 16px 0;
+  padding-left: 24px;
+}
+
+.volumeGuideList li {
+  margin-bottom: 8px;
+}
+
+.volumeGuideNote {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #ffc107;
+  margin: 0;
+  padding: 12px;
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 4px;
+  border-left: 3px solid #ffc107;
+}
+
+@media (max-width: 768px) {
+  .overlay {
+    padding: 10px;
+  }
+
+  .modal {
+    max-height: 95vh;
+  }
+
+  .header {
+    padding: 16px 20px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .intro {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  .sectionTitle {
+    font-size: 18px;
+  }
+
+  .warningTitle {
+    font-size: 16px;
+  }
+
+  .warningText {
+    font-size: 13px;
+  }
+}
+
