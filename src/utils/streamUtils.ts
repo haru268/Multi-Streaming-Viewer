@@ -4,11 +4,70 @@ export const extractStreamId = (url: string, platform: Platform): string => {
   if (!url) return '';
 
   if (platform === 'youtube') {
-    // YouTube URL形式: https://www.youtube.com/watch?v=VIDEO_ID
-    // または: https://youtu.be/VIDEO_ID
-    // または: VIDEO_ID (直接IDの場合)
-    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|^)([a-zA-Z0-9_-]{11})/);
-    return match ? match[1] : url;
+    // YouTube URL形式の全パターンをサポート
+    // 1. https://www.youtube.com/watch?v=VIDEO_ID (標準形式)
+    // 2. https://youtube.com/watch?v=VIDEO_ID (wwwなし)
+    // 3. https://m.youtube.com/watch?v=VIDEO_ID (モバイル版)
+    // 4. https://youtu.be/VIDEO_ID (短縮URL)
+    // 5. https://www.youtube.com/live/VIDEO_ID (ライブ配信)
+    // 6. https://www.youtube.com/embed/VIDEO_ID (埋め込みURL)
+    // 7. https://www.youtube.com/v/VIDEO_ID (古い形式)
+    // 8. https://www.youtube.com/shorts/VIDEO_ID (ショート動画)
+    // 9. https://www.youtube.com/watch?feature=share&v=VIDEO_ID (共有リンク)
+    // 10. VIDEO_ID (直接IDの場合)
+    
+    let cleanedUrl = url.trim();
+    
+    // URLパラメータやフラグメントを除去してから処理
+    cleanedUrl = cleanedUrl.split('#')[0];
+    
+    // パターン1-3: watch?v=VIDEO_ID 形式（www、m、なしすべて対応）
+    let match = cleanedUrl.match(/(?:youtube\.com|m\.youtube\.com)\/watch\?(?:.*&)?v=([a-zA-Z0-9_-]{11,})/);
+    if (match) {
+      return match[1].split('&')[0].split('?')[0]; // 追加パラメータを除去
+    }
+    
+    // パターン4: youtu.be/VIDEO_ID 形式
+    match = cleanedUrl.match(/youtu\.be\/([a-zA-Z0-9_-]{11,})/);
+    if (match) {
+      return match[1].split('?')[0].split('&')[0]; // 追加パラメータを除去
+    }
+    
+    // パターン5: /live/VIDEO_ID 形式
+    match = cleanedUrl.match(/youtube\.com\/live\/([a-zA-Z0-9_-]{11,})/);
+    if (match) {
+      return match[1].split('?')[0].split('&')[0];
+    }
+    
+    // パターン6: /embed/VIDEO_ID 形式
+    match = cleanedUrl.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11,})/);
+    if (match) {
+      return match[1].split('?')[0].split('&')[0];
+    }
+    
+    // パターン7: /v/VIDEO_ID 形式
+    match = cleanedUrl.match(/youtube\.com\/v\/([a-zA-Z0-9_-]{11,})/);
+    if (match) {
+      return match[1].split('?')[0].split('&')[0];
+    }
+    
+    // パターン8: /shorts/VIDEO_ID 形式
+    match = cleanedUrl.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11,})/);
+    if (match) {
+      return match[1].split('?')[0].split('&')[0];
+    }
+    
+    // パターン10: 直接VIDEO_ID（11文字以上の英数字、ハイフン、アンダースコア）
+    // URL形式でない場合のみ
+    if (!cleanedUrl.includes('youtube.com') && !cleanedUrl.includes('youtu.be')) {
+      const directIdMatch = cleanedUrl.match(/^([a-zA-Z0-9_-]{11,})$/);
+      if (directIdMatch) {
+        return directIdMatch[1];
+      }
+    }
+    
+    // どのパターンにも一致しない場合は元のURLを返す
+    return url;
   } else if (platform === 'twitch') {
     // Twitch URL形式: https://www.twitch.tv/CHANNEL_NAME
     // または: CHANNEL_NAME (直接チャンネル名の場合)
