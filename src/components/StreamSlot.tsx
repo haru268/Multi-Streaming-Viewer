@@ -5,10 +5,16 @@ import styles from './StreamSlot.module.css';
 
 interface StreamSlotProps {
   slot: StreamSlotType;
+  index: number;
   columns: 2 | 3 | 4;
+  isDragging: boolean;
   onMuteToggle: (id: string) => void;
   onVolumeChange: (id: string, volume: number) => void;
   onRemove: (id: string) => void;
+  onDragStart: (index: number) => void;
+  onDragOver: (e: React.DragEvent, index: number) => void;
+  onDrop: (e: React.DragEvent) => void;
+  onDragEnd: () => void;
 }
 
 declare global {
@@ -20,10 +26,16 @@ declare global {
 
 export const StreamSlot: React.FC<StreamSlotProps> = ({
   slot,
+  index,
   columns,
+  isDragging,
   onMuteToggle,
   onVolumeChange,
   onRemove,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
 }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerRef = useRef<any>(null);
@@ -170,15 +182,35 @@ export const StreamSlot: React.FC<StreamSlotProps> = ({
     onRemove(slot.id);
   };
 
+  const handleDragStartLocal = (e: React.DragEvent) => {
+    onDragStart(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', '');
+  };
+
+  const handleDragOverLocal = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    onDragOver(e, index);
+  };
+
   return (
-    <div className={styles.slotWrapper}>
+    <div 
+      className={`${styles.slotWrapper} ${isDragging ? styles.draggingWrapper : ''}`}
+      draggable
+      onDragStart={handleDragStartLocal}
+      onDragOver={handleDragOverLocal}
+      onDrop={onDrop}
+      onDragEnd={onDragEnd}
+    >
       <div
-        className={`${styles.slot} ${styles[`cols-${columns}`]}`}
+        className={`${styles.slot} ${styles[`cols-${columns}`]} ${isDragging ? styles.dragging : ''}`}
       >
         {embedUrl && (
           <button
             className={styles.removeButton}
             onClick={handleRemove}
+            onMouseDown={(e) => e.stopPropagation()}
             title="ストリームを削除"
           >
             ×
@@ -231,6 +263,7 @@ export const StreamSlot: React.FC<StreamSlotProps> = ({
               <button
                 className={styles.button}
                 onClick={handleMuteToggle}
+                onMouseDown={(e) => e.stopPropagation()}
                 title={slot.isMuted ? 'ミュート解除' : 'ミュート'}
               >
                 {slot.isMuted ? '🔇' : '🔊'}
@@ -241,6 +274,7 @@ export const StreamSlot: React.FC<StreamSlotProps> = ({
                 max="100"
                 value={slot.isMuted ? 0 : slot.volume}
                 onChange={handleVolumeChange}
+                onMouseDown={(e) => e.stopPropagation()}
                 className={styles.volumeSlider}
                 title={`音量: ${slot.volume}%`}
                 disabled={slot.isMuted}

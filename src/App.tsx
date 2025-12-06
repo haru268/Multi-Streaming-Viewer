@@ -34,6 +34,7 @@ function App() {
   const [teamName, setTeamName] = useState('');
   const [columns, setColumns] = useState<2 | 3 | 4>(3);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const saved = loadSettings();
@@ -146,6 +147,33 @@ function App() {
     );
   }, []);
 
+  // ドラッグ&ドロップでスロットを入れ替え
+  const handleDragStart = useCallback((index: number) => {
+    setDraggedIndex(index);
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    setSlots((prevSlots) => {
+      const newSlots = [...prevSlots];
+      const draggedSlot = newSlots[draggedIndex];
+      newSlots.splice(draggedIndex, 1);
+      newSlots.splice(index, 0, draggedSlot);
+      return newSlots;
+    });
+    setDraggedIndex(index);
+  }, [draggedIndex]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDraggedIndex(null);
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    setDraggedIndex(null);
+  }, []);
 
   const handleSaveSettings = useCallback(() => {
     const settings: AppSettings = {
@@ -191,14 +219,20 @@ function App() {
         className={styles.grid}
         style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
       >
-        {slots.map((slot) => (
+        {slots.map((slot, index) => (
           <StreamSlotComponent
             key={slot.id}
             slot={slot}
+            index={index}
             columns={columns}
+            isDragging={draggedIndex === index}
             onMuteToggle={handleMuteToggle}
             onVolumeChange={handleVolumeChange}
             onRemove={handleRemoveStream}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onDragEnd={handleDragEnd}
           />
         ))}
       </div>
