@@ -1,13 +1,21 @@
 .app {
   min-height: 100vh;
-  background: #1a1a1a;
-  color: #fff;
+  background: #fff;
+  color: #333;
   padding: 20px;
 }
 
 .header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.headerMain {
+  grid-column: 2;
   text-align: center;
-  margin-bottom: 30px;
 }
 
 .title {
@@ -19,27 +27,23 @@
 
 .subtitle {
   font-size: 16px;
-  color: #aaa;
-  margin: 0 0 16px 0;
+  color: #666;
+  margin: 0;
 }
 
-.termsButton {
-  padding: 8px 16px;
-  border: 1px solid #444;
-  border-radius: 4px;
-  background: transparent;
-  color: #aaa;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 8px;
+.notices {
+  grid-column: 3;
+  justify-self: end;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
 }
 
-.termsButton:hover {
-  background: #2a2a2a;
-  border-color: #555;
-  color: #fff;
+.notices li {
+  white-space: nowrap;
 }
 
 .grid {
@@ -57,6 +61,24 @@
 @media (max-width: 768px) {
   .app {
     padding: 12px;
+  }
+
+  .header {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .headerMain {
+    grid-column: 1;
+  }
+
+  .notices {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .notices li {
+    white-space: normal;
   }
 
   .title {

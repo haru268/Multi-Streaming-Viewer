@@ -168,7 +168,7 @@ export const StreamSlot: React.FC<StreamSlotProps> = ({
       case 'twitch':
         return 'Twitch';
       case 'twitcasting':
-        return 'ツイキャス';
+        return 'TwitCasting';
       default:
         return '';
     }

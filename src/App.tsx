@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { StreamSlot, Platform, AppSettings } from './types';
 import { StreamSlot as StreamSlotComponent } from './components/StreamSlot';
 import { ControlPanel } from './components/ControlPanel';
-import { TermsOfService } from './components/TermsOfService';
 import { saveSettings, loadSettings } from './utils/storage';
 import { extractStreamId } from './utils/streamUtils';
 import styles from './App.module.css';
@@ -27,29 +26,37 @@ const createInitialSlots = (): StreamSlot[] => {
   );
 };
 
+const normalizeLoadedSettings = (saved: AppSettings) => {
+  const loadedSlots =
+    saved.slots.length > 0
+      ? saved.slots.map((slot) => ({
+          ...slot,
+          isMuted: slot.platform && slot.streamId ? slot.isMuted : true,
+          volume: slot.volume ?? 50,
+        }))
+      : createInitialSlots();
+
+  return {
+    slots: loadedSlots,
+    columns: (saved.columns || 3) as 2 | 3 | 4,
+  };
+};
+
 function App() {
   const [slots, setSlots] = useState<StreamSlot[]>(createInitialSlots());
   const [selectedPlatform, setSelectedPlatform] = useState<Platform | null>(null);
   const [url, setUrl] = useState('');
   const [teamName, setTeamName] = useState('');
   const [columns, setColumns] = useState<2 | 3 | 4>(3);
-  const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const saved = loadSettings();
     if (saved) {
-      // 規約遵守: 保存された設定を読み込む際も、念のためミュート状態を確認
-      const loadedSlots = saved.slots.length > 0 
-        ? saved.slots.map(slot => ({
-            ...slot,
-            // 保存された設定があっても、安全のため新規追加分はミュートにする
-            isMuted: slot.platform && slot.streamId ? slot.isMuted : true,
-            volume: slot.volume ?? 50, // 既存データにvolumeがない場合は50%に設定
-          }))
-        : createInitialSlots();
+      const { slots: loadedSlots, columns: loadedColumns } =
+        normalizeLoadedSettings(saved);
       setSlots(loadedSlots);
-      setColumns(saved.columns || 3);
+      setColumns(loadedColumns);
     }
   }, []);
 
@@ -184,19 +191,36 @@ function App() {
     alert('設定を保存しました');
   }, [slots, columns]);
 
+  const handleApplySettings = useCallback(() => {
+    const saved = loadSettings();
+    if (!saved) {
+      alert('保存された設定がありません');
+      return;
+    }
+
+    const { slots: loadedSlots, columns: loadedColumns } =
+      normalizeLoadedSettings(saved);
+    setSlots(loadedSlots);
+    setColumns(loadedColumns);
+    alert('設定を反映しました');
+  }, []);
+
   return (
     <div className={styles.app}>
       <header className={styles.header}>
-        <h1 className={styles.title}>マルチ配信ビューア</h1>
-        <p className={styles.subtitle}>
-          YouTube、Twitch、ツイキャスのライブ配信を同時に視聴
-        </p>
-        <button
-          className={styles.termsButton}
-          onClick={() => setIsTermsOpen(true)}
-        >
-          利用規約について
-        </button>
+        <div className={styles.headerMain}>
+          <h1 className={styles.title}>マルチ配信ビューア</h1>
+          <p className={styles.subtitle}>
+            YouTube、Twitchのライブ配信を同時に視聴
+          </p>
+        </div>
+        <ul className={styles.notices}>
+          <li>音声の同時再生をしない（最重要）</li>
+          <li>最初は全ミュート、音ONはユーザー操作のみ</li>
+          <li>公式iframe埋め込みだけ使う</li>
+          <li>プレイヤーを改造・再配信しない</li>
+          <li>画質やUIを強制変更しない</li>
+        </ul>
       </header>
 
       <ControlPanel
@@ -209,6 +233,7 @@ function App() {
         onApply={handleApply}
         onAddSlot={handleAddSlot}
         onSaveSettings={handleSaveSettings}
+        onApplySettings={handleApplySettings}
         columns={columns}
         onColumnsChange={setColumns}
         slotCount={slots.length}
@@ -236,11 +261,6 @@ function App() {
           />
         ))}
       </div>
-
-      <TermsOfService
-        isOpen={isTermsOpen}
-        onClose={() => setIsTermsOpen(false)}
-      />
     </div>
   );
 }
